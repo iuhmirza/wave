@@ -1,7 +1,14 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Time
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Time, Table
 from sqlalchemy.orm import relationship
 
 from .database import Base
+
+association_table = Table(
+    "association_table",
+    Base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("conversation_id", ForeignKey("conversations.id"), primary_key=True)
+)
 
 class User(Base):
     __tablename__ = "users"
@@ -10,11 +17,9 @@ class User(Base):
     email = Column(String, unique = True, index = True)
     username = Column(String, unique = True, index = True)
     hashed_password = Column(String)
-
     public_key = Column(String)
-    conversation = Column(Integer)
 
-    conversations = relationship("Messages", back_populates="owner")
+    children = relationship("Child", secondary = association_table)
 
     
 
@@ -22,10 +27,9 @@ class Conversation(Base):
     __tablename__ = "conversations"
 
     id = Column(Integer, primary_key = True, index = True)
+
+    children = relationship("Child")
     
-
-
-    messages = relationship("Messsage", back_populates="Owner")
 
 class Message(Base):
     __tablename__ = "messages"
@@ -36,6 +40,5 @@ class Message(Base):
     encrypted_content = Column(String)
     timestamp = Column(Time)
 
-    owner_id = Column(Integer, ForeignKey("conversations.id"))
-    owner = relationship("Conversation", back_populates="Messages")
+    parent_id = Column(Integer, ForeignKey("conversations.id"))
 
