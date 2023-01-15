@@ -1,42 +1,36 @@
 from pydantic import BaseModel
 
 class MessageBase(BaseModel):
-    encrypted_content = str
-
-class MessageCreate(BaseModel):
-    pass
-
-class Message(MessageBase):
     id: int
     sender_id: int
     receiver_id: int
-    owner_id: int
-    
+    encrypted_content: str
+    time_stamp: str
+
     class Config:
         orm_mode = True
 
+
 class ConversationBase(BaseModel):
-    pass
-
-class ConversationCreate(ConversationBase):
-    pass
-
-class Conversation(ConversationBase):
     id: int
-    messages: list[Message]
+    messages: list(MessageBase)
 
     class Config:
         orm_mode = True
 
 class UserBase(BaseModel):
-    email: str
-
-class UserCreate(UserBase):
-    password: str
-
-class User(UserBase):
     id: int
-    conversations: list[Conversation] = []
+    email: str
+    username: str
+    hashed_password: str
+    public_key: str
 
     class Config:
         orm_mode = True
+
+class UserSchema(UserBase):
+    conversations: list[ConversationBase]
+
+class ConversationSchema(ConversationBase):
+    users: list[UserBase]
+    messages: list(MessageBase)
