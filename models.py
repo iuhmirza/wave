@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Time, Table
 from sqlalchemy.orm import relationship
 
-from .database import Base
+from database import Base
 
 association_table = Table(
     "association_table",
@@ -19,7 +19,7 @@ class User(Base):
     hashed_password = Column(String)
     public_key = Column(String)
 
-    children = relationship("Child", secondary = association_table)
+    conversations = relationship("Conversation", secondary = association_table)
 
     
 
@@ -28,7 +28,7 @@ class Conversation(Base):
 
     id = Column(Integer, primary_key = True, index = True)
 
-    children = relationship("Child")
+    messages = relationship("Message")
     
 
 class Message(Base):

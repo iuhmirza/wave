@@ -13,7 +13,6 @@ class MessageBase(BaseModel):
 
 class ConversationBase(BaseModel):
     id: int
-    messages: list(MessageBase)
 
     class Config:
         orm_mode = True
@@ -28,9 +27,14 @@ class UserBase(BaseModel):
     class Config:
         orm_mode = True
 
+class UserCreate(BaseModel):
+    email: str
+    username: str
+    password: str
+
 class UserSchema(UserBase):
     conversations: list[ConversationBase]
 
 class ConversationSchema(ConversationBase):
     users: list[UserBase]
-    messages: list(MessageBase)
+    messages: list[MessageBase]

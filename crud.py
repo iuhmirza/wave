@@ -1,10 +1,12 @@
-from sqlalchemy import Session
+from sqlalchemy.orm import Session
 
-from . import models, schemas
+import models, schemas
 
 from argon2 import PasswordHasher
 
 ph = PasswordHasher()
+
+import random
 
 #ph.verify(hash, "string")
 
@@ -17,9 +19,16 @@ def get_user_by_email(db: Session, email:str):
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
-def create_user(db: Session, user: schemas.UserBase):
+def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = ph.hash(user.password)
-    db_user = models.User(**user.dict(), hashed_password = hashed_password)
+    public_key = "fake"
+    db_user = models.User(
+        id = random.randint(0, 1000),
+        email = user.email,
+        username = user.username,
+        hashed_password = hashed_password,
+        public_key = public_key
+        )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
